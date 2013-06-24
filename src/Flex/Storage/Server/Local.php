@@ -42,7 +42,7 @@ class Server_Local implements Server
 			if (filter_var($web_root, FILTER_VALIDATE_URL) === FALSE AND $web_root !== '/')
 				throw new Server_Exception('Web root :web_root is not a valid url or "/"', array(':web_root' => $web_root));
 
-			$this->_web_root = (string) $web_root;
+			$this->_web_root = rtrim((string) $web_root, '/').'/';
 			return $this;
 		}
 		return $this->_web_root;
@@ -241,6 +241,9 @@ class Server_Local implements Server
 	 **/
 	public function file_put_contents($file, $content)
 	{
+		$dir = dirname($file);
+		$this->ensure_writable_directory($dir);
+		
 		return file_put_contents($this->realpath($file), $content) !== FALSE;
 	}
 
@@ -280,7 +283,7 @@ class Server_Local implements Server
 	 **/	
 	public function url($file)
 	{
-		$this->web_root().str_replace(DIRECTORY_SEPARATOR, '/', $file);
+		return $this->web_root().str_replace(DIRECTORY_SEPARATOR, '/', $file);
 	}
 
 	private function ensure_writable_directory($dir)
