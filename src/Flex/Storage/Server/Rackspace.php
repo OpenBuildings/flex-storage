@@ -13,33 +13,87 @@ class Server_Rackspace implements Server
 {
 	const IDENTITY = 'https://identity.api.rackspacecloud.com/v2.0/';
 
-	public function __construct($container = NULL, $region = NULL, array $options = array())
-	{
-		if ($container AND $region)
-		{
-			$this->connect($container, $region, $options);
-		}
-	}
-
-	protected $_container;
-
-	public function connect($container, $region, array $options)
+	public static function connect($container_name, $region, array $options)
 	{
 		$conn = new \OpenCloud\Rackspace(Server_Rackspace::IDENTITY, $options);
 
 		$object_store = $conn->ObjectStore('cloudFiles', $region, 'publicURL');
 
-		$this->_container = $object_store->Container($container);
+		return $object_store->Container($container_name);
+	}
 
-		return $this;
+	protected $_container_name;
+	protected $_region;
+	protected $_options;
+	protected $_container;
+
+	protected $_cdn_uri;
+	protected $_cdn_ssl;
+	protected $_cdn_streaming;
+
+	public function __construct($container_name = NULL, $region = NULL, array $options = array())
+	{
+		$this->_container_name = $container_name;
+		$this->_region = $region;
+		$this->_options = $options;
 	}
 
 	public function container($container = NULL)
 	{
 		if ( ! $this->_container)
-			throw new Server_Exception('Not yet connected');
+		{
+			$this->_container = Server_Rackspace::connect($this->_container_name, $this->_region, $this->_options);
+		}
 			
 		return $this->_container;
+	}
+
+	public function cdn_uri($cdn_uri = NULL)
+	{
+		if ($cdn_uri !== NULL)
+		{
+			$this->_cdn_uri = $cdn_uri;
+			return $this;
+		}
+
+		if ( ! $this->_cdn_uri)
+		{
+			$this->_cdn_uri = $this->container()->CDNURI();
+		}
+
+		return $this->_cdn_uri;
+	}
+
+	public function cdn_ssl($cdn_ssl = NULL)
+	{
+		if ($cdn_ssl !== NULL)
+		{
+			$this->_cdn_ssl = $cdn_ssl;
+			return $this;
+		}
+
+		if ( ! $this->_cdn_ssl)
+		{
+			$this->_cdn_ssl = $this->container()->SSLURI();
+		}
+
+		return $this->_cdn_ssl;
+	}
+
+	public function cdn_streaming($cdn_streaming = NULL)
+	{
+		if ($cdn_streaming !== NULL)
+		{
+			$this->_cdn_streaming = $cdn_streaming;
+			return $this;
+		}
+
+		if ( ! $this->_cdn_streaming)
+		{
+			$this->_cdn_streaming = $this->container()->StreamingURI();
+		}
+
+		return $this->_cdn_streaming;
 	}
 
 	/**
@@ -53,7 +107,6 @@ class Server_Rackspace implements Server
 	{
 		return (bool) $this->object($file);
 	}
-
 
 	/**
 	 * Check if the file actually exists and is a file
@@ -78,7 +131,6 @@ class Server_Rackspace implements Server
 	{
 		throw new Exception_Notsupported('Rackspace server does support directories');
 	}
-
 
 	/**
 	 * Delete the specified file
@@ -288,7 +340,17 @@ class Server_Rackspace implements Server
 	 **/	
 	public function url($file, $type = NULL)
 	{
-		return $this->container()->DataObject($file)->PublicURL($type);
+		switch ($type) 
+		{
+			case Server::URL_SSL:
+				return $this->cdn_ssl().'/'.$file;
+
+			case Server::URL_STREAMING:
+				return $this->cdn_streaming().'/'.$file;
+			
+			default:
+				return $this->cdn_uri().'/'.$file;	
+		}
 	}
 
 	private function object($name)
