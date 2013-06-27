@@ -3,7 +3,7 @@
 namespace Flex\Storage;
 
 /**
- * Local 
+ * Local Store
  *
  * @author     Ivan Kerin
  * @copyright  (c) 2011-2013 Despark Ltd.

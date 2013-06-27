@@ -3,7 +3,8 @@
 namespace Flex\Storage;
 
 /**
- * Local 
+ * A special Server that allows returning urls from a different server if they do not exist locally.
+ * This is very useful for shoing production assets on test/dev/staging 
  *
  * @author     Ivan Kerin
  * @copyright  (c) 2011-2013 Despark Ltd.
@@ -11,8 +12,17 @@ namespace Flex\Storage;
  */
 class Server_Local_Fallback extends Server_Local
 {
+	/**
+	 * The fallback server. If not set this service works like Server_Local
+	 * @var Server
+	 */
 	protected $_fallback;
 	
+	/**
+	 * Getter / Setter for fallback server.
+	 * @param  Server $fallback 
+	 * @return Server|$this           
+	 */
 	public function fallback(Server $fallback = NULL)
 	{
 		if ($fallback !== NULL)
@@ -24,12 +34,12 @@ class Server_Local_Fallback extends Server_Local
 	}
 
 	/**
-	 * Return a publicly accessable location of a file
+	 * Return a publicly accessable location of a file.
+	 * If not present, try shoing from fallback server
 	 *
 	 * @param string $file
 	 * @param string $type, one of Server::URL_HTTP, Server::URL_SSL, Server::URL_STREAMING
 	 * @return string
-	 * @author Ivan Kerin
 	 **/	
 	public function url($file, $type = NULL)
 	{

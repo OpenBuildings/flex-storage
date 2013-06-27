@@ -168,5 +168,4 @@ interface Server
 	 * @author Ivan Kerin
 	 **/	
 	public function url($file, $type = NULL);
-
 }

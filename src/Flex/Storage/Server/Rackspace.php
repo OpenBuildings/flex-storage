@@ -3,7 +3,7 @@
 namespace Flex\Storage;
 
 /**
- * Local 
+ * Rackspace server
  *
  * @author     Ivan Kerin
  * @copyright  (c) 2011-2013 Despark Ltd.
@@ -25,7 +25,7 @@ class Server_Rackspace implements Server
 
 	public function connect($container, $region, array $options)
 	{
-		$conn = new \OpenCloud\Rackspace('https://identity.api.rackspacecloud.com/v2.0/', $options);
+		$conn = new \OpenCloud\Rackspace(Server_Rackspace::IDENTITY, $options);
 
 		$object_store = $conn->ObjectStore('cloudFiles', $region, 'publicURL');
 

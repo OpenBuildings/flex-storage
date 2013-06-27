@@ -3,7 +3,7 @@
 namespace Flex\Storage;
 
 /**
- * Local 
+ * Extend exception to allow variables 
  *
  * @author     Ivan Kerin
  * @copyright  (c) 2011-2013 Despark Ltd.
