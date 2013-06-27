@@ -11,8 +11,18 @@ namespace Flex\Storage;
  */
 class Server_Rackspace implements Server
 {
+	/**
+	 * The identity endpoint
+	 */
 	const IDENTITY = 'https://identity.api.rackspacecloud.com/v2.0/';
 
+	/**
+	 * Connect to rackspace and get the object store's container
+	 * @param  string $container_name 
+	 * @param  string $region         LON, DFW ...
+	 * @param  array  $options        options passed to constructor
+	 * @return OpenCloud\ObjectStore\Container
+	 */
 	public static function connect($container_name, $region, array $options)
 	{
 		$conn = new \OpenCloud\Rackspace(Server_Rackspace::IDENTITY, $options);
@@ -48,11 +58,19 @@ class Server_Rackspace implements Server
 		return $this->_container;
 	}
 
+	/**
+	 * Getter / Setter of CDN URI. 
+	 * You can set it beforehand so that calling url method 
+	 * does not require authenticating to the Rackspace server
+	 * 
+	 * @param  string $cdn_uri 
+	 * @return string|$this
+	 */
 	public function cdn_uri($cdn_uri = NULL)
 	{
 		if ($cdn_uri !== NULL)
 		{
-			$this->_cdn_uri = $cdn_uri;
+			$this->_cdn_uri = (string) $cdn_uri;
 			return $this;
 		}
 
@@ -64,11 +82,19 @@ class Server_Rackspace implements Server
 		return $this->_cdn_uri;
 	}
 
+	/**
+	 * Getter / Setter of CDN URI for ssl. 
+	 * You can set it beforehand so that calling url method 
+	 * does not require authenticating to the Rackspace server
+	 * 
+	 * @param  string $cdn_ssl 
+	 * @return string|$this
+	 */
 	public function cdn_ssl($cdn_ssl = NULL)
 	{
 		if ($cdn_ssl !== NULL)
 		{
-			$this->_cdn_ssl = $cdn_ssl;
+			$this->_cdn_ssl = (string) $cdn_ssl;
 			return $this;
 		}
 
@@ -80,11 +106,19 @@ class Server_Rackspace implements Server
 		return $this->_cdn_ssl;
 	}
 
+	/**
+	 * Getter / Setter of CDN URI for streaming.  
+	 * You can set it beforehand so that calling url method 
+	 * does not require authenticating to the Rackspace server
+	 * 
+	 * @param  string $cdn_streaming 
+	 * @return string|$this
+	 */
 	public function cdn_streaming($cdn_streaming = NULL)
 	{
 		if ($cdn_streaming !== NULL)
 		{
-			$this->_cdn_streaming = $cdn_streaming;
+			$this->_cdn_streaming = (string) $cdn_streaming;
 			return $this;
 		}
 
