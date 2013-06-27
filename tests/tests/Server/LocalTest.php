@@ -13,7 +13,8 @@ class Server_LocalTest extends PHPUnit_Framework_TestCase {
 	public function setUp()
 	{
 		$this->dir = __DIR__.'/../../data/';
-		$this->server = new Flex\Storage\Server_Local(__DIR__.'/../../data', 'http://example.com');
+		$this->server = new Flex\Storage\Server_Local($this->dir, 'http://example.com');
+		parent::setUp();
 	}
 
 	public function test_file_root()
