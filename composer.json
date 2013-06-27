@@ -9,7 +9,7 @@
         }
     ],
     "require": {
-        "rackspace/php-opencloud": "dev-master"
+        "rackspace/php-opencloud": "dev-working"
     },
     "autoload": {
         "psr-0": {"Flex\\Storage\\": "src/"}

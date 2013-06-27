@@ -297,7 +297,7 @@ class Server_Rackspace implements Server
 		{
 			return $this->container()->DataObject($name);
 		} 
-		catch (\OpenCloud\Base\Exceptions\ObjFetchError $exception) 
+		catch (\OpenCloud\Common\Exceptions\ObjFetchError $exception) 
 		{
 			return NULL;
 		}

@@ -194,7 +194,7 @@ class Server_RackspaceTest extends PHPUnit_Framework_TestCase {
 		{
 			self::$server->container()->DataObject($file);
 		} 
-		catch (\OpenCloud\Base\Exceptions\ObjFetchError $exception) 
+		catch (OpenCloud\Common\Exceptions\ObjFetchError $exception) 
 		{
 			self::fail('Filed asserting that file '.$file.' exists on rackspace');
 		}
@@ -207,7 +207,7 @@ class Server_RackspaceTest extends PHPUnit_Framework_TestCase {
 			self::$server->container()->DataObject($file);
 			self::fail('Filed asserting that file '.$file.' does not exist on rackspace');
 		} 
-		catch (\OpenCloud\Base\Exceptions\ObjFetchError $exception) 
+		catch (OpenCloud\Common\Exceptions\ObjFetchError $exception) 
 		{
 			
 		}
