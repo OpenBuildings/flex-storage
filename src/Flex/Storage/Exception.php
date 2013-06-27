@@ -9,9 +9,9 @@ namespace Flex\Storage;
  * @copyright  (c) 2011-2013 Despark Ltd.
  * @license    http://www.opensource.org/licenses/isc-license.txt
  */
-class Server_Exception extends \Exception
+class Exception extends \Exception
 {
-	public function __construct($message, array $variables = array(), Exception $previous = NULL)
+	public function __construct($message, array $variables = array(), \Exception $previous = NULL)
 	{
 		if ($variables)
 		{

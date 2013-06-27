@@ -23,7 +23,7 @@ class Server_LocalTest extends PHPUnit_Framework_TestCase {
 		$this->server->file_root($this->dir.'testdir');
 		$this->assertEquals($this->dir.'testdir/', $this->server->file_root());
 
-		$this->setExpectedException('Flex\Storage\Server_Exception');
+		$this->setExpectedException('Flex\Storage\Exception');
 		$this->server->file_root('not valid directory');
 	}
 
@@ -34,7 +34,7 @@ class Server_LocalTest extends PHPUnit_Framework_TestCase {
 		$this->server->web_root('http://test.example.com');
 		$this->assertEquals('http://test.example.com/', $this->server->web_root());
 
-		$this->setExpectedException('Flex\Storage\Server_Exception');
+		$this->setExpectedException('Flex\Storage\Exception');
 		$this->server->web_root('notvalidurl/test.example.com');
 	}
 
@@ -179,5 +179,6 @@ class Server_LocalTest extends PHPUnit_Framework_TestCase {
 	public function test_url()
 	{
 		$this->assertEquals('http://example.com/test.txt', $this->server->url('test.txt'));	
+		$this->assertEquals('https://example.com/test.txt', $this->server->url('test.txt', Flex\Storage\Server::URL_SSL));	
 	}
 }

@@ -9,43 +9,37 @@ namespace Flex\Storage;
  * @copyright  (c) 2011-2013 Despark Ltd.
  * @license    http://www.opensource.org/licenses/isc-license.txt
  */
-class Server_Local implements Server
+class Server_Rackspace implements Server
 {
+	const IDENTITY = 'https://identity.api.rackspacecloud.com/v2.0/';
 
-	public function __construct($file_root, $web_root = NULL)
+	public function __construct($container = NULL, $region = NULL, array $options = array())
 	{
-		$this->file_root($file_root);
-		$this->web_root($web_root);
-	}
-	
-	protected $_file_root;
-	
-	public function file_root($file_root = NULL)
-	{
-		if ($file_root !== NULL)
+		if ($container AND $region)
 		{
-			if ( ! is_dir($file_root))
-				throw new Exception('File root :file_root is not a directory', array(':file_root' => $file_root));
-
-			$this->_file_root = rtrim($file_root, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
-			return $this;
+			$this->connect($container, $region, $options);
 		}
-		return $this->_file_root;
 	}
 
-	protected $_web_root;
-	
-	public function web_root($web_root = NULL)
-	{
-		if ($web_root !== NULL)
-		{
-			if (filter_var($web_root, FILTER_VALIDATE_URL) === FALSE AND $web_root !== '/')
-				throw new Exception('Web root :web_root is not a valid url or "/"', array(':web_root' => $web_root));
+	protected $_container;
 
-			$this->_web_root = rtrim((string) $web_root, '/').'/';
-			return $this;
-		}
-		return $this->_web_root;
+	public function connect($container, $region, array $options)
+	{
+		$conn = new \OpenCloud\Rackspace('https://identity.api.rackspacecloud.com/v2.0/', $options);
+
+		$object_store = $conn->ObjectStore('cloudFiles', $region, 'publicURL');
+
+		$this->_container = $object_store->Container($container);
+
+		return $this;
+	}
+
+	public function container($container = NULL)
+	{
+		if ( ! $this->_container)
+			throw new Server_Exception('Not yet connected');
+			
+		return $this->_container;
 	}
 
 	/**
@@ -57,7 +51,7 @@ class Server_Local implements Server
 	 **/
 	public function file_exists($file)
 	{
-		return file_exists($this->realpath($file));
+		return (bool) $this->object($file);
 	}
 
 
@@ -70,7 +64,7 @@ class Server_Local implements Server
 	 **/
 	public function is_file($file)
 	{
-		return is_file($this->realpath($file));	
+		return $this->file_exists($file);
 	}
 
 	/**
@@ -82,7 +76,7 @@ class Server_Local implements Server
 	 **/
 	public function is_dir($file)
 	{
-		return is_dir($this->realpath($file));	
+		throw new Exception_Notsupported('Rackspace server does support directories');
 	}
 
 
@@ -95,15 +89,9 @@ class Server_Local implements Server
 	 **/
 	public function unlink($file)
 	{
-		$file = $this->realpath($file);
-
-		if (is_file($file))
+		if ($object = $this->object($file))
 		{
-			return unlink($file);
-		}
-		elseif (is_dir($file))
-		{
-			return rmdir($file);
+			return (bool) $object->Delete();
 		}
 	}
 
@@ -116,7 +104,7 @@ class Server_Local implements Server
 	 **/
 	public function mkdir($file)
 	{
-		return mkdir($this->realpath($file), 0777, TRUE);
+		throw new Exception_Notsupported('Rackspace server does not support directories');
 	}
 
 	/**
@@ -129,7 +117,18 @@ class Server_Local implements Server
 	 **/
 	public function rename($file, $new_file)
 	{
-		return rename($this->realpath($file), $this->realpath($new_file));
+		if ($object = $this->object($file))
+		{
+			$new_object = $this->container()->DataObject();
+			
+			$new_object->name = $new_file;
+			$new_object->content_type = $object->content_type;
+			$new_object->extra_headers = $object->extra_headers;
+
+			$object->Copy($new_object);
+			$object->Delete();
+			return TRUE;
+		}
 	}
 
 	/**
@@ -142,7 +141,21 @@ class Server_Local implements Server
 	 **/
 	public function copy($file, $new_file)
 	{
-		return copy($this->realpath($file), $this->realpath($new_file));
+		if ($object = $this->object($file))
+		{
+			if ($object = $this->object($file))
+			{
+				$new_object = $this->container()->DataObject();
+				
+				$new_object->name = $new_file;
+				$new_object->content_type = $object->content_type;
+				$new_object->extra_headers = $object->extra_headers;
+
+				$object->Copy($new_object);
+				
+				return TRUE;
+			}
+		}
 	}
 
 	/**
@@ -156,11 +169,7 @@ class Server_Local implements Server
 	 **/
 	public function upload($file, $local_file)
 	{
-		$dir = dirname($file);
-		$this->ensure_writable_directory($dir);
-		$file = $this->realpath($file);
-		
-		return copy($local_file, $file);
+		$this->container()->DataObject()->Create(array('name' => $file), $local_file);
 	}
 
 	/**
@@ -173,18 +182,9 @@ class Server_Local implements Server
 	 **/
 	public function upload_move($file, $local_file)
 	{
-		$dir = dirname($file);
-		$this->ensure_writable_directory($dir);
-		$file = $this->realpath($file);
-		
-		if (is_uploaded_file($local_file))
-		{
-			return move_uploaded_file($local_file, $file);
-		}
-		elseif (is_file($local_file))
-		{
-			return rename($local_file, $file);
-		}
+		$this->container()->DataObject()->Create(array('name' => $file), $local_file);
+
+		return unlink($local_file);
 	}
 
 	/**
@@ -198,9 +198,9 @@ class Server_Local implements Server
 	public function download($file, $local_file)
 	{
 		if ( ! is_dir(dirname($local_file)))
-			throw new Exception(":dir must be local directory", array(":dir" => dirname($local_file)));
+			throw new Server_Exception(":dir must be local directory", array(":dir" => dirname($local_file)));
 			
-		return copy($this->realpath($file), $local_file);
+		return (bool) $this->container()->DataObject($file)->SaveToFilename($local_file);
 	}
 
 	/**
@@ -214,9 +214,13 @@ class Server_Local implements Server
 	public function download_move($file, $local_file)
 	{
 		if ( ! is_dir(dirname($local_file)))
-			throw new Exception(":dir must be local directory", array(":dir" => dirname($local_file)));
-			
-		return rename($this->realpath($file), $local_file);
+			throw new Server_Exception(":dir must be local directory", array(":dir" => dirname($local_file)));
+
+		$object = $this->container()->DataObject($file);
+		if ($object->SaveToFilename($local_file))
+		{
+			return (bool) $object->Delete();
+		}
 	}
 
 	/**
@@ -228,7 +232,7 @@ class Server_Local implements Server
 	 **/
 	public function file_get_contents($file)
 	{
-		return file_get_contents($this->realpath($file));
+		return $this->container()->DataObject($file)->saveToString();
 	}
 
 	/**
@@ -241,10 +245,11 @@ class Server_Local implements Server
 	 **/
 	public function file_put_contents($file, $content)
 	{
-		$dir = dirname($file);
-		$this->ensure_writable_directory($dir);
-		
-		return file_put_contents($this->realpath($file), $content) !== FALSE;
+		$object = $this->container()->DataObject();
+		$object->SetData($content);
+		$object->name = $file;
+		$object->content_type = 'text/plain';
+		return (bool) $object->Create();
 	}
 
 	/**
@@ -257,7 +262,7 @@ class Server_Local implements Server
 	 **/	
 	public function is_writable($file)
 	{
-		return is_writable($this->realpath($file));
+		return TRUE;
 	}
 
 
@@ -270,7 +275,7 @@ class Server_Local implements Server
 	 **/	
 	public function realpath($file)
 	{
-		return $this->file_root().$file;
+		throw new Exception_Notsupported('Rackspace server does not support local filenames');
 	}
 
 	/**
@@ -283,29 +288,18 @@ class Server_Local implements Server
 	 **/	
 	public function url($file, $type = NULL)
 	{
-		$root = $this->web_root();
-
-		if ($type == Server::URL_SSL)
-		{
-			$root = str_replace('http://', 'https://', $this->web_root());
-		}
-		
-		return $root.str_replace(DIRECTORY_SEPARATOR, '/', $file);
+		return $this->container()->DataObject($file)->PublicURL($type);
 	}
 
-	private function ensure_writable_directory($dir)
+	private function object($name)
 	{
-		if ( ! $this->is_dir($dir))
+		try 
 		{
-			if ( ! $this->mkdir($dir))
-				throw new Exception("Cannot create dir :dir (:realdir)", array(":dir" => $dir, ':realdir' => $this->realpath($dir)));
+			return $this->container()->DataObject($name);
+		} 
+		catch (\OpenCloud\Base\Exceptions\ObjFetchError $exception) 
+		{
+			return NULL;
 		}
-
-		if ( ! $this->is_writable($dir))
-			throw new Exception('Directory :dir must be writable',
-				array(':dir' => $dir));
-
-		return $dir;
 	}
-
 }

@@ -1,4 +1,14 @@
+--- 
+env: 
+  secure: |-
+    HL8gL8CFewWWHTq1XVZIqj5Yxla93ukacnlyg3UqEwZXGKR5k3LxmlsGm+TW
+    XKbXdNGLaAaZ09esawDV7XNfpE0g+te1Wb4FaYH9irrCsMyUfr6EQIjwaR5A
+    dw4tL4hjCSJgouaaUc5hEzs5GC2tI5eusvCzC1csVECr3BnDPjI=
+
 language: php
 
 php:
-  - 5.3
+	- 5.3
+
+before_script:
+	- composer install

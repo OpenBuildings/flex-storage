@@ -11,6 +11,10 @@ namespace Flex\Storage;
  */
 interface Server
 {
+	const URL_HTTP = 'HTTP';
+	const URL_SSL = 'SSL';
+	const URL_STREAMING = 'STREAMING';
+
 	/**
 	 * Check if the file actually exists
 	 *
@@ -159,10 +163,10 @@ interface Server
 	 * Return a publicly accessable location of a file
 	 *
 	 * @param string $file
-	 * @param string|boolean $protocol
+	 * @param string $type, one of Server::URL_HTTP, Server::URL_SSL, Server::URL_STREAMING
 	 * @return string
 	 * @author Ivan Kerin
 	 **/	
-	public function url($file);
+	public function url($file, $type = NULL);
 
 }
