@@ -36,6 +36,7 @@ class Server_Rackspace implements Server
 	protected $_region;
 	protected $_options;
 	protected $_container;
+	protected $_url_type = Server::URL_HTTP;
 
 	protected $_cdn_uri;
 	protected $_cdn_ssl;
@@ -56,6 +57,16 @@ class Server_Rackspace implements Server
 		}
 			
 		return $this->_container;
+	}
+
+	public function url_type($url_type = NULL)
+	{
+		if ($url_type !== NULL)
+		{
+			$this->_url_type = (string) $url_type;
+			return $this;
+		}
+		return $this->_url_type;
 	}
 
 	/**
@@ -372,9 +383,11 @@ class Server_Rackspace implements Server
 	 * @return string
 	 * @author Ivan Kerin
 	 **/	
-	public function url($file, $type = NULL)
+	public function url($file, $url_type = NULL)
 	{
-		switch ($type) 
+		$url_type = $url_type ?: $this->url_type();
+
+		switch ($url_type)
 		{
 			case Server::URL_SSL:
 				return $this->cdn_ssl().'/'.$file;
@@ -382,7 +395,7 @@ class Server_Rackspace implements Server
 			case Server::URL_STREAMING:
 				return $this->cdn_streaming().'/'.$file;
 			
-			default:
+			case Server::URL_HTTP:
 				return $this->cdn_uri().'/'.$file;	
 		}
 	}

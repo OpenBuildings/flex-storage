@@ -16,6 +16,11 @@ interface Server
 	const URL_STREAMING = 'STREAMING';
 
 	/**
+	 * Setter / Getter of default url type
+	 */
+	public function url_type();
+
+	/**
 	 * Check if the file actually exists
 	 *
 	 * @param string $file

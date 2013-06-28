@@ -160,6 +160,20 @@ class Server_RackspaceTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('https://3533bfdb7f646acec3be-0cd42b8dee15b5017160a1d30c7ce549.ssl.cf3.rackcdn.com/test.txt', self::$server->url('test.txt', Flex\Storage\Server::URL_SSL));			
 
 		$this->assertEquals('http://90bef8afdf3b9a686f39-0cd42b8dee15b5017160a1d30c7ce549.r33.stream.cf3.rackcdn.com/test.txt', self::$server->url('test.txt', Flex\Storage\Server::URL_STREAMING));	
+
+		self::$server->url_type(Flex\Storage\Server::URL_SSL);
+
+		$this->assertEquals('https://3533bfdb7f646acec3be-0cd42b8dee15b5017160a1d30c7ce549.ssl.cf3.rackcdn.com/test.txt', self::$server->url('test.txt'));			
+
+		$this->assertEquals('http://7b286e6f63f2a7f84847-0cd42b8dee15b5017160a1d30c7ce549.r33.cf3.rackcdn.com/test.txt', self::$server->url('test.txt', Flex\Storage\Server::URL_HTTP));
+
+		self::$server->url_type(Flex\Storage\Server::URL_STREAMING);
+
+		$this->assertEquals('http://90bef8afdf3b9a686f39-0cd42b8dee15b5017160a1d30c7ce549.r33.stream.cf3.rackcdn.com/test.txt', self::$server->url('test.txt'));			
+
+		$this->assertEquals('http://7b286e6f63f2a7f84847-0cd42b8dee15b5017160a1d30c7ce549.r33.cf3.rackcdn.com/test.txt', self::$server->url('test.txt', Flex\Storage\Server::URL_HTTP));
+
+		self::$server->url_type(Flex\Storage\Server::URL_HTTP);
 	}
 	
 	private static function unlink($name)

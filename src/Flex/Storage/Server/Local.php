@@ -11,7 +11,6 @@ namespace Flex\Storage;
  */
 class Server_Local implements Server
 {
-
 	public function __construct($file_root, $web_root = NULL)
 	{
 		$this->file_root($file_root);
@@ -19,6 +18,8 @@ class Server_Local implements Server
 	}
 	
 	protected $_file_root;
+	protected $_web_root;
+	protected $_url_type = Server::URL_HTTP;
 	
 	public function file_root($file_root = NULL)
 	{
@@ -33,8 +34,6 @@ class Server_Local implements Server
 		return $this->_file_root;
 	}
 
-	protected $_web_root;
-	
 	public function web_root($web_root = NULL)
 	{
 		if ($web_root !== NULL)
@@ -46,6 +45,16 @@ class Server_Local implements Server
 			return $this;
 		}
 		return $this->_web_root;
+	}
+
+	public function url_type($url_type = NULL)
+	{
+		if ($url_type !== NULL)
+		{
+			$this->_url_type = (string) $url_type;
+			return $this;
+		}
+		return $this->_url_type;
 	}
 
 	/**
@@ -277,15 +286,17 @@ class Server_Local implements Server
 	 * Return a publicly accessable location of a file
 	 *
 	 * @param string $file
-	 * @param string $type, one of Server::URL_HTTP, Server::URL_SSL, Server::URL_STREAMING
+	 * @param string $url_type, one of Server::URL_HTTP, Server::URL_SSL, Server::URL_STREAMING
 	 * @return string
 	 * @author Ivan Kerin
 	 **/	
-	public function url($file, $type = NULL)
+	public function url($file, $url_type = NULL)
 	{
 		$root = $this->web_root();
 
-		if ($type == Server::URL_SSL)
+		$url_type = $url_type ?: $this->url_type();
+
+		if ($url_type == Server::URL_SSL)
 		{
 			$root = str_replace('http://', 'https://', $this->web_root());
 		}

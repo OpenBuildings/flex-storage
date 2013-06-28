@@ -181,5 +181,10 @@ class Server_LocalTest extends PHPUnit_Framework_TestCase {
 	{
 		$this->assertEquals('http://example.com/test.txt', $this->server->url('test.txt'));	
 		$this->assertEquals('https://example.com/test.txt', $this->server->url('test.txt', Flex\Storage\Server::URL_SSL));	
+
+		$this->server->url_type(Flex\Storage\Server::URL_SSL);
+
+		$this->assertEquals('https://example.com/test.txt', $this->server->url('test.txt'));	
+		$this->assertEquals('http://example.com/test.txt', $this->server->url('test.txt', Flex\Storage\Server::URL_HTTP));
 	}
 }
