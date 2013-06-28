@@ -3,20 +3,20 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "c63f8be644a0ba60d2e42bebca94e325",
+    "hash": "eacd90709f08f0196fb2915dcdd59eb5",
     "packages": [
         {
             "name": "rackspace/php-opencloud",
-            "version": "dev-working",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rackspace/php-opencloud.git",
-                "reference": "8d8b057ab23c7e978eb6266eeb4be3d7a6ea3ab0"
+                "reference": "80bf33a2db83cfa9837bbc3547d387f5de0f11ba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rackspace/php-opencloud/zipball/8d8b057ab23c7e978eb6266eeb4be3d7a6ea3ab0",
-                "reference": "8d8b057ab23c7e978eb6266eeb4be3d7a6ea3ab0",
+                "url": "https://api.github.com/repos/rackspace/php-opencloud/zipball/80bf33a2db83cfa9837bbc3547d387f5de0f11ba",
+                "reference": "80bf33a2db83cfa9837bbc3547d387f5de0f11ba",
                 "shasum": ""
             },
             "require": {
@@ -48,7 +48,7 @@
                 "cloudfiles",
                 "opencloud"
             ],
-            "time": "2013-06-27 03:50:40"
+            "time": "2013-06-27 17:44:43"
         }
     ],
     "packages-dev": [
