@@ -8,9 +8,8 @@
             "email": "ivan@openbuildings.com"
         }
     ],
-    "version": "0.1.0-dev",
     "require": {
-        "rackspace/php-opencloud": "dev-master"
+        "rackspace/php-opencloud": "1.5.*"
     },
     "autoload": {
         "psr-0": {"Flex\\Storage\\": "src/"}
