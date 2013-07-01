@@ -387,22 +387,24 @@ class Server_Rackspace implements Server
 	{
 		$url_type = $url_type ?: $this->url_type();
 
+		$file = implode('/', array_map('rawurlencode', explode('/', $file)));
+
 		switch ($url_type)
 		{
 			case Server::URL_SSL:
-				return $this->cdn_ssl().'/'.rawurlencode($file);
+				return $this->cdn_ssl().'/'.$file;
 
 			case Server::URL_STREAMING:
-				return $this->cdn_streaming().'/'.rawurlencode($file);
+				return $this->cdn_streaming().'/'.$file;
 			
 			case Server::URL_HTTP:
-				return $this->cdn_uri().'/'.rawurlencode($file);
+				return $this->cdn_uri().'/'.$file;
 		}
 	}
 
 	private function object($name)
 	{
-		try 
+		try
 		{
 			return $this->container()->DataObject($name);
 		} 

@@ -300,8 +300,10 @@ class Server_Local implements Server
 		{
 			$root = str_replace('http://', 'https://', $this->web_root());
 		}
+
+		$file = implode('/', array_map('rawurlencode', explode('/', $file)));
 		
-		return $root.str_replace(DIRECTORY_SEPARATOR, '/', rawurlencode($file));
+		return $root.str_replace(DIRECTORY_SEPARATOR, '/', $file);
 	}
 
 	private function ensure_writable_directory($dir)
