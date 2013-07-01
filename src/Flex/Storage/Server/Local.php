@@ -38,8 +38,8 @@ class Server_Local implements Server
 	{
 		if ($web_root !== NULL)
 		{
-			if (filter_var($web_root, FILTER_VALIDATE_URL) === FALSE AND $web_root !== '/')
-				throw new Exception('Web root :web_root is not a valid url or "/"', array(':web_root' => $web_root));
+			if (filter_var($web_root, FILTER_VALIDATE_URL) === FALSE AND ! preg_match('/^(\/[a-zA-Z0-9]+)+$/', $web_root))
+				throw new Exception('Web root :web_root is not a valid absolute or relative url', array(':web_root' => $web_root));
 
 			$this->_web_root = rtrim((string) $web_root, '/').'/';
 			return $this;
