@@ -35,6 +35,8 @@ class Server_LocalTest extends PHPUnit_Framework_TestCase {
 		$this->server->web_root('http://test.example.com');
 		$this->assertEquals('http://test.example.com/', $this->server->web_root());
 
+		$this->server->web_root('/upload');
+		$this->assertEquals('/upload/', $this->server->web_root());
 
 		$this->server->web_root('/upload/dir');
 		$this->assertEquals('/upload/dir/', $this->server->web_root());
