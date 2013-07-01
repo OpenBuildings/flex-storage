@@ -390,13 +390,13 @@ class Server_Rackspace implements Server
 		switch ($url_type)
 		{
 			case Server::URL_SSL:
-				return $this->cdn_ssl().'/'.rawurldecode($file);
+				return $this->cdn_ssl().'/'.rawurlencode($file);
 
 			case Server::URL_STREAMING:
-				return $this->cdn_streaming().'/'.rawurldecode($file);
+				return $this->cdn_streaming().'/'.rawurlencode($file);
 			
 			case Server::URL_HTTP:
-				return $this->cdn_uri().'/'.rawurldecode($file);
+				return $this->cdn_uri().'/'.rawurlencode($file);
 		}
 	}
 
