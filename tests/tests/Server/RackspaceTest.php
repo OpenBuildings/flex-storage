@@ -12,12 +12,12 @@ class Server_RackspaceTest extends PHPUnit_Framework_TestCase {
 
 	public static function setUpBeforeClass()
 	{
-		if ( ! isset($_SERVER['PHP_RCLOUD_USER']) OR ! isset($_SERVER['PHP_RCLOUD_API_KEY']))
+		if ( ! getenv('PHP_RCLOUD_USER') OR ! getenv('PHP_RCLOUD_API_KEY'))
 			throw new Exception('PHP_RCLOUD_API_KEY and PHP_RCLOUD_USER must be set as environment variables');
 			
 		self::$server = new Flex\Storage\Server_Rackspace('flex_storage_test', 'LON', array(
-			'username' => $_SERVER['PHP_RCLOUD_USER'],
-			'apiKey' => $_SERVER['PHP_RCLOUD_API_KEY'],
+			'username' => getenv('PHP_RCLOUD_USER'),
+			'apiKey' => getenv('PHP_RCLOUD_API_KEY'),
 		));
 	}
 

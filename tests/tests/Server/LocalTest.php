@@ -17,6 +17,19 @@ class Server_LocalTest extends PHPUnit_Framework_TestCase {
 		parent::setUp();
 	}
 
+	public function test_recursive_rmdir()
+	{
+		shell_exec('rm -rf '.$this->dir.'testdir1');
+		mkdir($this->dir.'testdir1');
+		mkdir($this->dir.'testdir1/test');
+		mkdir($this->dir.'testdir1/test/test_dir');
+		file_put_contents($this->dir.'testdir1/test/test_file', 'test');
+
+		Flex\Storage\Server_Local::recursive_rmdir($this->dir.'testdir1');
+
+		$this->assertFileNotExists($this->dir.'testdir1');
+	}
+
 	public function test_file_root()
 	{
 		$this->assertEquals($this->dir, $this->server->file_root());

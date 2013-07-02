@@ -16,6 +16,26 @@ class Server_Local implements Server
 		$this->file_root($file_root);
 		$this->web_root($web_root);
 	}
+
+	public static function recursive_rmdir($dir)
+	{
+		$contents = array_diff(scandir($dir), array('.','..')); 
+
+		foreach ($contents as $item)
+		{
+			$item = $dir.DIRECTORY_SEPARATOR.$item;
+			if (is_dir($item))
+			{
+				self::recursive_rmdir($item);
+			}
+			else
+			{
+				unlink($item);
+			}
+		}
+
+		return rmdir($dir); 
+	}
 	
 	protected $_file_root;
 	protected $_web_root;
@@ -112,7 +132,7 @@ class Server_Local implements Server
 		}
 		elseif (is_dir($file))
 		{
-			return rmdir($file);
+			return self::recursive_rmdir($file);
 		}
 	}
 
