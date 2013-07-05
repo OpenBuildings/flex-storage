@@ -37,7 +37,7 @@ class Server_LocalTest extends PHPUnit_Framework_TestCase {
 		$this->server->file_root($this->dir.'testdir');
 		$this->assertEquals($this->dir.'testdir/', $this->server->file_root());
 
-		$this->setExpectedException('Flex\Storage\Exception');
+		$this->setExpectedException('Flex\Storage\Exception_IO');
 		$this->server->file_root('not valid directory');
 	}
 
@@ -91,6 +91,8 @@ class Server_LocalTest extends PHPUnit_Framework_TestCase {
 
 		$this->assertTrue($this->server->unlink('testdir2'));
 		$this->assertFileNotExists($this->dir.'testdir2');
+
+		$this->assertNull($this->server->unlink('testdir_notexists'));
 	}
 
 	public function test_mkdir()
@@ -137,6 +139,9 @@ class Server_LocalTest extends PHPUnit_Framework_TestCase {
 
 		unlink($this->dir.'test5.txt');
 		unlink($this->dir.'test6_uploaded.txt');
+
+		$this->setExpectedException('Flex\Storage\Exception_IO');
+		$this->server->upload('test6_uploaded.txt', $this->dir.'test5_missing.txt');
 	}
 
 	public function test_upload_move()
@@ -148,6 +153,9 @@ class Server_LocalTest extends PHPUnit_Framework_TestCase {
 
 		$this->assertEquals('local', file_get_contents($this->dir.'test8_uploaded.txt'));
 		unlink($this->dir.'test8_uploaded.txt');
+
+		$this->setExpectedException('Flex\Storage\Exception_IO');
+		$this->server->upload_move('test7_uploaded.txt', $this->dir.'test7_missing.txt');
 	}
 
 	public function test_download()
@@ -182,7 +190,13 @@ class Server_LocalTest extends PHPUnit_Framework_TestCase {
 		$this->assertFileExists($this->dir.'test12.txt');
 		$this->assertEquals('test12', file_get_contents($this->dir.'test12.txt'));
 
+		$this->server->file_put_contents('testdir2/test.txt', 'test13');
+		$this->assertFileExists($this->dir.'testdir2/test.txt');
+		$this->assertEquals('test13', file_get_contents($this->dir.'testdir2/test.txt'));
+
+		unlink($this->dir.'testdir2/test.txt');
 		unlink($this->dir.'test12.txt');
+		rmdir($this->dir.'testdir2');
 	}
 
 	public function test_is_writable()

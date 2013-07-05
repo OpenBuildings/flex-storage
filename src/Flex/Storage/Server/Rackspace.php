@@ -174,7 +174,7 @@ class Server_Rackspace implements Server
 	 **/
 	public function is_dir($file)
 	{
-		throw new Exception_Notsupported('Rackspace server does support directories');
+		throw new Exception_Notsupported('Rackspace server does support directories'); // @codeCoverageIgnore
 	}
 
 	/**
@@ -240,18 +240,15 @@ class Server_Rackspace implements Server
 	{
 		if ($object = $this->object($file))
 		{
-			if ($object = $this->object($file))
-			{
-				$new_object = $this->container()->DataObject();
-				
-				$new_object->name = $new_file;
-				$new_object->content_type = $object->content_type;
-				$new_object->extra_headers = $object->extra_headers;
+			$new_object = $this->container()->DataObject();
+			
+			$new_object->name = $new_file;
+			$new_object->content_type = $object->content_type;
+			$new_object->extra_headers = $object->extra_headers;
 
-				$object->Copy($new_object);
-				
-				return TRUE;
-			}
+			$object->Copy($new_object);
+			
+			return TRUE;
 		}
 	}
 
@@ -297,7 +294,7 @@ class Server_Rackspace implements Server
 		if ( ! is_dir(dirname($local_file)))
 			throw new Server_Exception(":dir must be local directory", array(":dir" => dirname($local_file)));
 			
-		return (bool) $this->container()->DataObject($file)->SaveToFilename($local_file);
+		$this->container()->DataObject($file)->SaveToFilename($local_file);
 	}
 
 	/**
@@ -314,10 +311,8 @@ class Server_Rackspace implements Server
 			throw new Server_Exception(":dir must be local directory", array(":dir" => dirname($local_file)));
 
 		$object = $this->container()->DataObject($file);
-		if ($object->SaveToFilename($local_file))
-		{
-			return (bool) $object->Delete();
-		}
+		$object->SaveToFilename($local_file);
+		$object->Delete();
 	}
 
 	/**
@@ -346,7 +341,7 @@ class Server_Rackspace implements Server
 		$object->SetData($content);
 		$object->name = $file;
 		$object->content_type = 'text/plain';
-		return (bool) $object->Create();
+		$object->Create();
 	}
 
 	/**
@@ -392,14 +387,19 @@ class Server_Rackspace implements Server
 		switch ($url_type)
 		{
 			case Server::URL_SSL:
-				return $this->cdn_ssl().'/'.$file;
+				$full = $this->cdn_ssl().'/'.$file;
+			break;
 
 			case Server::URL_STREAMING:
-				return $this->cdn_streaming().'/'.$file;
+				$full = $this->cdn_streaming().'/'.$file;
+			break;
 			
 			case Server::URL_HTTP:
-				return $this->cdn_uri().'/'.$file;
+				$full = $this->cdn_uri().'/'.$file;
+			break;
 		}
+
+		return $full;
 	}
 
 	private function object($name)

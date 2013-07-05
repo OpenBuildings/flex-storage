@@ -10,6 +10,10 @@ class Server_RackspaceTest extends PHPUnit_Framework_TestCase {
 	public static $server;
 	public $dir;
 
+	const CDN_URI = 'http://7b286e6f63f2a7f84847-0cd42b8dee15b5017160a1d30c7ce549.r33.cf3.rackcdn.com';
+	const CDN_SSL = 'https://3533bfdb7f646acec3be-0cd42b8dee15b5017160a1d30c7ce549.ssl.cf3.rackcdn.com';
+	const CDN_STREAMING = 'http://90bef8afdf3b9a686f39-0cd42b8dee15b5017160a1d30c7ce549.r33.stream.cf3.rackcdn.com';
+
 	public static function setUpBeforeClass()
 	{
 		if ( ! getenv('PHP_RCLOUD_USER') OR ! getenv('PHP_RCLOUD_API_KEY'))
@@ -25,6 +29,40 @@ class Server_RackspaceTest extends PHPUnit_Framework_TestCase {
 	{
 		$this->dir = __DIR__.'/../../data/';
 		parent::setUp();
+	}
+
+	public function test_construct_and_connect()
+	{
+		$server = new Flex\Storage\Server_Rackspace('flex_storage_test', 'LON', array(
+			'username' => getenv('PHP_RCLOUD_USER'),
+			'apiKey' => getenv('PHP_RCLOUD_API_KEY'),
+		));
+
+		$this->assertNotNull($server->container());
+	}
+
+	public function test_cdn_uri()
+	{
+		$this->assertEquals(self::CDN_URI, self::$server->cdn_uri());
+		self::$server->cdn_uri('test_cdn');
+		$this->assertEquals('test_cdn', self::$server->cdn_uri());
+		self::$server->cdn_uri(self::CDN_URI);
+	}
+
+	public function test_cdn_ssl()
+	{
+		$this->assertEquals(self::CDN_SSL, self::$server->cdn_ssl());
+		self::$server->cdn_ssl('test_cdn');
+		$this->assertEquals('test_cdn', self::$server->cdn_ssl());
+		self::$server->cdn_ssl(self::CDN_SSL);
+	}
+
+	public function test_cdn_streaming()
+	{
+		$this->assertEquals(self::CDN_STREAMING, self::$server->cdn_streaming());
+		self::$server->cdn_streaming('test_cdn');
+		$this->assertEquals('test_cdn', self::$server->cdn_streaming());
+		self::$server->cdn_streaming(self::CDN_STREAMING);
 	}
 
 	public function test_file_exists()
@@ -52,6 +90,8 @@ class Server_RackspaceTest extends PHPUnit_Framework_TestCase {
 
 		$this->assertTrue(self::$server->unlink('test2.txt'));
 		$this->assertRackspaceFileNotExists('test2.txt');
+
+		$this->assertNull(self::$server->unlink('test2_missing.txt'));
 	}
 
 	public function test_mkdir()
@@ -74,6 +114,8 @@ class Server_RackspaceTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals('test_rename', self::file_get_contents('test3_renamed.txt'));
 
 		self::unlink('test3_renamed.txt');
+
+		$this->assertNull(self::$server->rename('test3_missing.txt', 'test3_renamed.txt'));
 	}
 
 	public function test_copy()
@@ -82,6 +124,8 @@ class Server_RackspaceTest extends PHPUnit_Framework_TestCase {
 		$this->assertRackspaceFileEquals('test.txt', 'test4_copy.txt');
 
 		self::unlink('test4_copy.txt');
+
+		$this->assertNull(self::$server->copy('test_missing.txt', 'test4_copy.txt'));
 	}
 
 	public function test_upload()
@@ -125,6 +169,7 @@ class Server_RackspaceTest extends PHPUnit_Framework_TestCase {
 		$this->assertRackspaceFileNotExists('test10.txt');
 
 		$this->assertEquals('server', file_get_contents($this->dir.'test11_downloaded.txt'));
+
 		unlink($this->dir.'test11_downloaded.txt');
 	}
 
@@ -157,25 +202,25 @@ class Server_RackspaceTest extends PHPUnit_Framework_TestCase {
 	{
 		self::$server->file_put_contents('test14/test13 test.txt', 'test12');
 
-		$this->assertEquals('http://7b286e6f63f2a7f84847-0cd42b8dee15b5017160a1d30c7ce549.r33.cf3.rackcdn.com/test.txt', self::$server->url('test.txt'));
+		$this->assertEquals(self::CDN_URI.'/test.txt', self::$server->url('test.txt'));
 
-		$this->assertEquals('http://7b286e6f63f2a7f84847-0cd42b8dee15b5017160a1d30c7ce549.r33.cf3.rackcdn.com/test14/test12%20test.txt', self::$server->url('test14/test12 test.txt'));
+		$this->assertEquals(self::CDN_URI.'/test14/test12%20test.txt', self::$server->url('test14/test12 test.txt'));
 
-		$this->assertEquals('https://3533bfdb7f646acec3be-0cd42b8dee15b5017160a1d30c7ce549.ssl.cf3.rackcdn.com/test.txt', self::$server->url('test.txt', Flex\Storage\Server::URL_SSL));			
+		$this->assertEquals(self::CDN_SSL.'/test.txt', self::$server->url('test.txt', Flex\Storage\Server::URL_SSL));			
 
-		$this->assertEquals('http://90bef8afdf3b9a686f39-0cd42b8dee15b5017160a1d30c7ce549.r33.stream.cf3.rackcdn.com/test.txt', self::$server->url('test.txt', Flex\Storage\Server::URL_STREAMING));	
+		$this->assertEquals(self::CDN_STREAMING.'/test.txt', self::$server->url('test.txt', Flex\Storage\Server::URL_STREAMING));	
 
 		self::$server->url_type(Flex\Storage\Server::URL_SSL);
 
-		$this->assertEquals('https://3533bfdb7f646acec3be-0cd42b8dee15b5017160a1d30c7ce549.ssl.cf3.rackcdn.com/test.txt', self::$server->url('test.txt'));			
+		$this->assertEquals(self::CDN_SSL.'/test.txt', self::$server->url('test.txt'));			
 
-		$this->assertEquals('http://7b286e6f63f2a7f84847-0cd42b8dee15b5017160a1d30c7ce549.r33.cf3.rackcdn.com/test.txt', self::$server->url('test.txt', Flex\Storage\Server::URL_HTTP));
+		$this->assertEquals(self::CDN_URI.'/test.txt', self::$server->url('test.txt', Flex\Storage\Server::URL_HTTP));
 
 		self::$server->url_type(Flex\Storage\Server::URL_STREAMING);
 
-		$this->assertEquals('http://90bef8afdf3b9a686f39-0cd42b8dee15b5017160a1d30c7ce549.r33.stream.cf3.rackcdn.com/test.txt', self::$server->url('test.txt'));			
+		$this->assertEquals(self::CDN_STREAMING.'/test.txt', self::$server->url('test.txt'));			
 
-		$this->assertEquals('http://7b286e6f63f2a7f84847-0cd42b8dee15b5017160a1d30c7ce549.r33.cf3.rackcdn.com/test.txt', self::$server->url('test.txt', Flex\Storage\Server::URL_HTTP));
+		$this->assertEquals(self::CDN_URI.'/test.txt', self::$server->url('test.txt', Flex\Storage\Server::URL_HTTP));
 
 		self::$server->url_type(Flex\Storage\Server::URL_HTTP);
 		self::unlink('test14/test13 test.txt');

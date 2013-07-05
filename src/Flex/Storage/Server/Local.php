@@ -46,7 +46,7 @@ class Server_Local implements Server
 		if ($file_root !== NULL)
 		{
 			if ( ! is_dir($file_root))
-				throw new Exception('File root :file_root is not a directory', array(':file_root' => $file_root));
+				throw new Exception_IO('File root :file_root is not a directory', array(':file_root' => $file_root));
 
 			$this->_file_root = rtrim($file_root, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
 			return $this;
@@ -185,6 +185,9 @@ class Server_Local implements Server
 	 **/
 	public function upload($file, $local_file)
 	{
+		if ( ! is_file($local_file)) 
+			throw new Exception_IO(":file must be local file", array(":file" => $local_file));
+
 		$dir = dirname($file);
 		$this->ensure_writable_directory($dir);
 		$file = $this->realpath($file);
@@ -208,12 +211,14 @@ class Server_Local implements Server
 		
 		if (is_uploaded_file($local_file))
 		{
-			return move_uploaded_file($local_file, $file);
+			return move_uploaded_file($local_file, $file); // @codeCoverageIgnore
 		}
 		elseif (is_file($local_file))
 		{
 			return rename($local_file, $file);
 		}
+
+		throw new Exception_IO(":file must be local file", array(":file" => $local_file));
 	}
 
 	/**
@@ -227,7 +232,7 @@ class Server_Local implements Server
 	public function download($file, $local_file)
 	{
 		if ( ! is_dir(dirname($local_file)))
-			throw new Exception(":dir must be local directory", array(":dir" => dirname($local_file)));
+			throw new Exception_IO(":dir must be local directory", array(":dir" => dirname($local_file)));
 			
 		return copy($this->realpath($file), $local_file);
 	}
@@ -243,7 +248,7 @@ class Server_Local implements Server
 	public function download_move($file, $local_file)
 	{
 		if ( ! is_dir(dirname($local_file)))
-			throw new Exception(":dir must be local directory", array(":dir" => dirname($local_file)));
+			throw new Exception_IO(':dir must be local directory', array(':dir' => dirname($local_file)));
 			
 		return rename($this->realpath($file), $local_file);
 	}
@@ -331,12 +336,11 @@ class Server_Local implements Server
 		if ( ! $this->is_dir($dir))
 		{
 			if ( ! $this->mkdir($dir))
-				throw new Exception("Cannot create dir :dir (:realdir)", array(":dir" => $dir, ':realdir' => $this->realpath($dir)));
+				throw new Exception_IO('Cannot create dir :dir (:realdir)', array(':dir' => $dir, ':realdir' => $this->realpath($dir)));
 		}
 
 		if ( ! $this->is_writable($dir))
-			throw new Exception('Directory :dir must be writable',
-				array(':dir' => $dir));
+			throw new Exception_IO('Directory :dir must be writable',	array(':dir' => $dir)); // @codeCoverageIgnore
 
 		return $dir;
 	}
