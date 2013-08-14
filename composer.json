@@ -11,10 +11,6 @@
     "require": {
         "rackspace/php-opencloud": "1.5.*"
     },
-    "require-dev": {
-        "phpunit/phpunit": "3.7.*",
-        "satooshi/php-coveralls": "dev-master"
-    },
     "autoload": {
         "psr-0": {"Flex\\Storage\\": "src/"}
     }
