@@ -6,6 +6,8 @@ Flex Storage
 
 Flex Storage is used to abstract out the file storage mechanism. Used from Jam ORM library
 
+Features a special Server that allows returning urls from a different server if they do not exist locally.
+This is very useful for shoing production assets on test/dev/staging
 
 LICENSE
 =======

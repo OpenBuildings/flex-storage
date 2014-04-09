@@ -1,21 +1,29 @@
---- 
-env: 
-  secure: |-
-    HL8gL8CFewWWHTq1XVZIqj5Yxla93ukacnlyg3UqEwZXGKR5k3LxmlsGm+TW
-    XKbXdNGLaAaZ09esawDV7XNfpE0g+te1Wb4FaYH9irrCsMyUfr6EQIjwaR5A
-    dw4tL4hjCSJgouaaUc5hEzs5GC2tI5eusvCzC1csVECr3BnDPjI=
-
 language: php
 
 php:
   - 5.4
 
-script:
-  - phpunit --coverage-clover build/logs/clover.xml
+env:
+  secure: |-
+    HL8gL8CFewWWHTq1XVZIqj5Yxla93ukacnlyg3UqEwZXGKR5k3LxmlsGm+TW
+    XKbXdNGLaAaZ09esawDV7XNfpE0g+te1Wb4FaYH9irrCsMyUfr6EQIjwaR5A
+    dw4tL4hjCSJgouaaUc5hEzs5GC2tI5eusvCzC1csVECr3BnDPjI=
+
+notifications:
+  email: false
+  slack:
+    secure: ediAzmtYRAxxvwfGX9rsTvsEWamQ5DtyHTsR9+jOxltCp4oi2bt5goXA84w0DjL80AwOztSiRuvD926EKa+5Hy9GTRUEZoUKGd2Ttp2jSwspl/u147p8lZFRDCoTg+OtuY6oMhGuHgDJR2NBTWKyKRZeVTrYBqKwm3J9BnZS3q8=
+
+install:
+  - composer selfupdate
+  - composer install --no-interaction
 
 before_script:
   - mkdir -p build/logs
-  - composer require satooshi/php-coveralls:0.6.*
+
+script:
+  - phpunit --coverage-clover build/logs/clover.xml
 
 after_script:
-  - php vendor/bin/coveralls -v
+  - wget https://scrutinizer-ci.com/ocular.phar
+  - php ocular.phar code-coverage:upload --format=php-clover build/logs/clover.xml
