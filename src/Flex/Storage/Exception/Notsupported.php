@@ -3,7 +3,7 @@
 namespace Flex\Storage;
 
 /**
- * Thrown when not supported 
+ * Thrown when not supported
  *
  * @author     Ivan Kerin
  * @copyright  (c) 2011-2013 Despark Ltd.

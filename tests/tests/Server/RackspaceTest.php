@@ -18,7 +18,7 @@ class Server_RackspaceTest extends PHPUnit_Framework_TestCase {
 	{
 		if ( ! getenv('PHP_RCLOUD_USER') OR ! getenv('PHP_RCLOUD_API_KEY'))
 			throw new Exception('PHP_RCLOUD_API_KEY and PHP_RCLOUD_USER must be set as environment variables');
-			
+
 		self::$server = new Flex\Storage\Server_Rackspace('flex_storage_test', 'LON', array(
 			'username' => getenv('PHP_RCLOUD_USER'),
 			'apiKey' => getenv('PHP_RCLOUD_API_KEY'),
@@ -206,31 +206,31 @@ class Server_RackspaceTest extends PHPUnit_Framework_TestCase {
 
 		$this->assertEquals(self::CDN_URI.'/test14/test12%20test.txt', self::$server->url('test14/test12 test.txt'));
 
-		$this->assertEquals(self::CDN_SSL.'/test.txt', self::$server->url('test.txt', Flex\Storage\Server::URL_SSL));			
+		$this->assertEquals(self::CDN_SSL.'/test.txt', self::$server->url('test.txt', Flex\Storage\Server::URL_SSL));
 
-		$this->assertEquals(self::CDN_STREAMING.'/test.txt', self::$server->url('test.txt', Flex\Storage\Server::URL_STREAMING));	
+		$this->assertEquals(self::CDN_STREAMING.'/test.txt', self::$server->url('test.txt', Flex\Storage\Server::URL_STREAMING));
 
 		self::$server->url_type(Flex\Storage\Server::URL_SSL);
 
-		$this->assertEquals(self::CDN_SSL.'/test.txt', self::$server->url('test.txt'));			
+		$this->assertEquals(self::CDN_SSL.'/test.txt', self::$server->url('test.txt'));
 
 		$this->assertEquals(self::CDN_URI.'/test.txt', self::$server->url('test.txt', Flex\Storage\Server::URL_HTTP));
 
 		self::$server->url_type(Flex\Storage\Server::URL_STREAMING);
 
-		$this->assertEquals(self::CDN_STREAMING.'/test.txt', self::$server->url('test.txt'));			
+		$this->assertEquals(self::CDN_STREAMING.'/test.txt', self::$server->url('test.txt'));
 
 		$this->assertEquals(self::CDN_URI.'/test.txt', self::$server->url('test.txt', Flex\Storage\Server::URL_HTTP));
 
 		self::$server->url_type(Flex\Storage\Server::URL_HTTP);
 		self::unlink('test14/test13 test.txt');
 	}
-	
+
 	private static function unlink($name)
 	{
 		self::$server->container()->DataObject($name)->Delete();
 	}
-		
+
 	private static function file_put_contents($name, $content)
 	{
 		$file = self::$server->container()->DataObject();
@@ -244,21 +244,21 @@ class Server_RackspaceTest extends PHPUnit_Framework_TestCase {
 	{
 		return self::$server->container()->DataObject($name)->SaveToString();
 	}
-	
+
 	public static function assertRackspaceFileEquals($file1, $file2)
 	{
 		$content1 = self::$server->container()->DataObject($file1)->SaveToString();
 		$content2 = self::$server->container()->DataObject($file2)->SaveToString();
 		self::assertEquals($content1, $content2, 'Failed asserting that file '.$file1.' equals '.$file2);
 	}
-	
+
 	public static function assertRackspaceFileExists($file)
 	{
-		try 
+		try
 		{
 			self::$server->container()->DataObject($file);
-		} 
-		catch (OpenCloud\Common\Exceptions\ObjFetchError $exception) 
+		}
+		catch (OpenCloud\Common\Exceptions\ObjFetchError $exception)
 		{
 			self::fail('Filed asserting that file '.$file.' exists on rackspace');
 		}
@@ -266,14 +266,14 @@ class Server_RackspaceTest extends PHPUnit_Framework_TestCase {
 
 	public static function assertRackspaceFileNotExists($file)
 	{
-		try 
+		try
 		{
 			self::$server->container()->DataObject($file);
 			self::fail('Filed asserting that file '.$file.' does not exist on rackspace');
-		} 
-		catch (OpenCloud\Common\Exceptions\ObjFetchError $exception) 
+		}
+		catch (OpenCloud\Common\Exceptions\ObjFetchError $exception)
 		{
-			
+
 		}
 	}
 

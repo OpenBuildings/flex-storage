@@ -97,9 +97,9 @@ class Server_LocalTest extends PHPUnit_Framework_TestCase {
 
 	public function test_mkdir()
 	{
-		$this->assertFileNotExists($this->dir.'testdir3/test3');	
+		$this->assertFileNotExists($this->dir.'testdir3/test3');
 		$this->server->mkdir('testdir3/test3');
-		$this->assertFileExists($this->dir.'testdir3/test3');	
+		$this->assertFileExists($this->dir.'testdir3/test3');
 
 		rmdir($this->dir.'testdir3/test3');
 		rmdir($this->dir.'testdir3');
@@ -212,15 +212,15 @@ class Server_LocalTest extends PHPUnit_Framework_TestCase {
 
 	public function test_url()
 	{
-		$this->assertEquals('http://example.com/test.txt', $this->server->url('test.txt'));	
-		$this->assertEquals('http://example.com/test%20test.txt', $this->server->url('test test.txt'));	
-		$this->assertEquals('http://example.com/test2/test%20test.txt', $this->server->url('test2/test test.txt'));	
-		$this->assertEquals('http://example.com/test%20%27%28ss%29test.txt', $this->server->url('test \'(ss)test.txt'));	
-		$this->assertEquals('https://example.com/test.txt', $this->server->url('test.txt', Flex\Storage\Server::URL_SSL));	
+		$this->assertEquals('http://example.com/test.txt', $this->server->url('test.txt'));
+		$this->assertEquals('http://example.com/test%20test.txt', $this->server->url('test test.txt'));
+		$this->assertEquals('http://example.com/test2/test%20test.txt', $this->server->url('test2/test test.txt'));
+		$this->assertEquals('http://example.com/test%20%27%28ss%29test.txt', $this->server->url('test \'(ss)test.txt'));
+		$this->assertEquals('https://example.com/test.txt', $this->server->url('test.txt', Flex\Storage\Server::URL_SSL));
 
 		$this->server->url_type(Flex\Storage\Server::URL_SSL);
 
-		$this->assertEquals('https://example.com/test.txt', $this->server->url('test.txt'));	
+		$this->assertEquals('https://example.com/test.txt', $this->server->url('test.txt'));
 		$this->assertEquals('http://example.com/test.txt', $this->server->url('test.txt', Flex\Storage\Server::URL_HTTP));
 	}
 }

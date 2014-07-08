@@ -18,7 +18,7 @@ class Server_Rackspace implements Server
 
 	/**
 	 * Connect to rackspace and get the object store's container
-	 * @param  string $container_name 
+	 * @param  string $container_name
 	 * @param  string $region         LON, DFW ...
 	 * @param  array  $options        options passed to constructor
 	 * @return OpenCloud\ObjectStore\Container
@@ -55,7 +55,7 @@ class Server_Rackspace implements Server
 		{
 			$this->_container = Server_Rackspace::connect($this->_container_name, $this->_region, $this->_options);
 		}
-			
+
 		return $this->_container;
 	}
 
@@ -70,11 +70,11 @@ class Server_Rackspace implements Server
 	}
 
 	/**
-	 * Getter / Setter of CDN URI. 
-	 * You can set it beforehand so that calling url method 
+	 * Getter / Setter of CDN URI.
+	 * You can set it beforehand so that calling url method
 	 * does not require authenticating to the Rackspace server
-	 * 
-	 * @param  string $cdn_uri 
+	 *
+	 * @param  string $cdn_uri
 	 * @return string|$this
 	 */
 	public function cdn_uri($cdn_uri = NULL)
@@ -94,11 +94,11 @@ class Server_Rackspace implements Server
 	}
 
 	/**
-	 * Getter / Setter of CDN URI for ssl. 
-	 * You can set it beforehand so that calling url method 
+	 * Getter / Setter of CDN URI for ssl.
+	 * You can set it beforehand so that calling url method
 	 * does not require authenticating to the Rackspace server
-	 * 
-	 * @param  string $cdn_ssl 
+	 *
+	 * @param  string $cdn_ssl
 	 * @return string|$this
 	 */
 	public function cdn_ssl($cdn_ssl = NULL)
@@ -118,11 +118,11 @@ class Server_Rackspace implements Server
 	}
 
 	/**
-	 * Getter / Setter of CDN URI for streaming.  
-	 * You can set it beforehand so that calling url method 
+	 * Getter / Setter of CDN URI for streaming.
+	 * You can set it beforehand so that calling url method
 	 * does not require authenticating to the Rackspace server
-	 * 
-	 * @param  string $cdn_streaming 
+	 *
+	 * @param  string $cdn_streaming
 	 * @return string|$this
 	 */
 	public function cdn_streaming($cdn_streaming = NULL)
@@ -217,7 +217,7 @@ class Server_Rackspace implements Server
 		if ($object = $this->object($file))
 		{
 			$new_object = $this->container()->DataObject();
-			
+
 			$new_object->name = $new_file;
 			$new_object->content_type = $object->content_type;
 			$new_object->extra_headers = $object->extra_headers;
@@ -241,13 +241,13 @@ class Server_Rackspace implements Server
 		if ($object = $this->object($file))
 		{
 			$new_object = $this->container()->DataObject();
-			
+
 			$new_object->name = $new_file;
 			$new_object->content_type = $object->content_type;
 			$new_object->extra_headers = $object->extra_headers;
 
 			$object->Copy($new_object);
-			
+
 			return TRUE;
 		}
 	}
@@ -293,7 +293,7 @@ class Server_Rackspace implements Server
 	{
 		if ( ! is_dir(dirname($local_file)))
 			throw new Server_Exception(":dir must be local directory", array(":dir" => dirname($local_file)));
-			
+
 		$this->container()->DataObject($file)->SaveToFilename($local_file);
 	}
 
@@ -351,7 +351,7 @@ class Server_Rackspace implements Server
 	 * @param string $content
 	 * @return string
 	 * @author Ivan Kerin
-	 **/	
+	 **/
 	public function is_writable($file)
 	{
 		return TRUE;
@@ -364,7 +364,7 @@ class Server_Rackspace implements Server
 	 * @param string $file
 	 * @return string
 	 * @author Ivan Kerin
-	 **/	
+	 **/
 	public function realpath($file)
 	{
 		throw new Exception_Notsupported('Rackspace server does not support local filenames');
@@ -377,7 +377,7 @@ class Server_Rackspace implements Server
 	 * @param string $type, one of Server::URL_HTTP, Server::URL_SSL, Server::URL_STREAMING
 	 * @return string
 	 * @author Ivan Kerin
-	 **/	
+	 **/
 	public function url($file, $url_type = NULL)
 	{
 		$url_type = $url_type ?: $this->url_type();
@@ -393,7 +393,7 @@ class Server_Rackspace implements Server
 			case Server::URL_STREAMING:
 				$full = $this->cdn_streaming().'/'.$file;
 			break;
-			
+
 			case Server::URL_HTTP:
 				$full = $this->cdn_uri().'/'.$file;
 			break;
@@ -407,8 +407,8 @@ class Server_Rackspace implements Server
 		try
 		{
 			return $this->container()->DataObject($name);
-		} 
-		catch (\OpenCloud\Common\Exceptions\ObjFetchError $exception) 
+		}
+		catch (\OpenCloud\Common\Exceptions\ObjFetchError $exception)
 		{
 			return NULL;
 		}

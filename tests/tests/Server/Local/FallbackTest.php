@@ -14,7 +14,7 @@ class Server_Local_FallbackTest extends PHPUnit_Framework_TestCase {
 	{
 		if ( ! isset($_SERVER['PHP_RCLOUD_USER']) OR ! isset($_SERVER['PHP_RCLOUD_API_KEY']))
 			throw new Exception('PHP_RCLOUD_API_KEY and PHP_RCLOUD_USER must be set as environment variables');
-			
+
 		self::$rackspace_server = new Flex\Storage\Server_Rackspace('flex_storage_test', 'LON', array(
 			'username' => $_SERVER['PHP_RCLOUD_USER'],
 			'apiKey' => $_SERVER['PHP_RCLOUD_API_KEY'],
@@ -32,8 +32,8 @@ class Server_Local_FallbackTest extends PHPUnit_Framework_TestCase {
 
 	public function test_url()
 	{
-		$this->assertEquals('http://example.com/test.txt', $this->server->url('test.txt'));	
-		$this->assertEquals('https://example.com/test.txt', $this->server->url('test.txt', Flex\Storage\Server::URL_SSL));	
+		$this->assertEquals('http://example.com/test.txt', $this->server->url('test.txt'));
+		$this->assertEquals('https://example.com/test.txt', $this->server->url('test.txt', Flex\Storage\Server::URL_SSL));
 
 		$file = self::$rackspace_server->container()->DataObject();
 		$file->SetData('test');

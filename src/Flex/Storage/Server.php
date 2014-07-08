@@ -152,7 +152,7 @@ interface Server
 	 * @param string $content
 	 * @return string
 	 * @author Ivan Kerin
-	 **/	
+	 **/
 	public function is_writable($file);
 
 	/**
@@ -161,7 +161,7 @@ interface Server
 	 * @param string $file
 	 * @return string
 	 * @author Ivan Kerin
-	 **/	
+	 **/
 	public function realpath($file);
 
 	/**
@@ -171,6 +171,6 @@ interface Server
 	 * @param string $type, one of Server::URL_HTTP, Server::URL_SSL, Server::URL_STREAMING
 	 * @return string
 	 * @author Ivan Kerin
-	 **/	
+	 **/
 	public function url($file, $type = NULL);
 }

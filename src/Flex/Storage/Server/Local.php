@@ -19,7 +19,7 @@ class Server_Local implements Server
 
 	public static function recursive_rmdir($dir)
 	{
-		$contents = array_diff(scandir($dir), array('.','..')); 
+		$contents = array_diff(scandir($dir), array('.','..'));
 
 		foreach ($contents as $item)
 		{
@@ -34,13 +34,13 @@ class Server_Local implements Server
 			}
 		}
 
-		return rmdir($dir); 
+		return rmdir($dir);
 	}
-	
+
 	protected $_file_root;
 	protected $_web_root;
 	protected $_url_type = Server::URL_HTTP;
-	
+
 	public function file_root($file_root = NULL)
 	{
 		if ($file_root !== NULL)
@@ -99,7 +99,7 @@ class Server_Local implements Server
 	 **/
 	public function is_file($file)
 	{
-		return is_file($this->realpath($file));	
+		return is_file($this->realpath($file));
 	}
 
 	/**
@@ -111,7 +111,7 @@ class Server_Local implements Server
 	 **/
 	public function is_dir($file)
 	{
-		return is_dir($this->realpath($file));	
+		return is_dir($this->realpath($file));
 	}
 
 
@@ -185,13 +185,13 @@ class Server_Local implements Server
 	 **/
 	public function upload($file, $local_file)
 	{
-		if ( ! is_file($local_file)) 
+		if ( ! is_file($local_file))
 			throw new Exception_IO(":file must be local file", array(":file" => $local_file));
 
 		$dir = dirname($file);
 		$this->ensure_writable_directory($dir);
 		$file = $this->realpath($file);
-		
+
 		return copy($local_file, $file);
 	}
 
@@ -208,7 +208,7 @@ class Server_Local implements Server
 		$dir = dirname($file);
 		$this->ensure_writable_directory($dir);
 		$file = $this->realpath($file);
-		
+
 		if (is_uploaded_file($local_file))
 		{
 			return move_uploaded_file($local_file, $file); // @codeCoverageIgnore
@@ -233,7 +233,7 @@ class Server_Local implements Server
 	{
 		if ( ! is_dir(dirname($local_file)))
 			throw new Exception_IO(":dir must be local directory", array(":dir" => dirname($local_file)));
-			
+
 		return copy($this->realpath($file), $local_file);
 	}
 
@@ -249,7 +249,7 @@ class Server_Local implements Server
 	{
 		if ( ! is_dir(dirname($local_file)))
 			throw new Exception_IO(':dir must be local directory', array(':dir' => dirname($local_file)));
-			
+
 		return rename($this->realpath($file), $local_file);
 	}
 
@@ -277,7 +277,7 @@ class Server_Local implements Server
 	{
 		$dir = dirname($file);
 		$this->ensure_writable_directory($dir);
-		
+
 		return file_put_contents($this->realpath($file), $content) !== FALSE;
 	}
 
@@ -288,7 +288,7 @@ class Server_Local implements Server
 	 * @param string $content
 	 * @return string
 	 * @author Ivan Kerin
-	 **/	
+	 **/
 	public function is_writable($file)
 	{
 		return is_writable($this->realpath($file));
@@ -301,7 +301,7 @@ class Server_Local implements Server
 	 * @param string $file
 	 * @return string
 	 * @author Ivan Kerin
-	 **/	
+	 **/
 	public function realpath($file)
 	{
 		return $this->file_root().$file;
@@ -314,7 +314,7 @@ class Server_Local implements Server
 	 * @param string $url_type, one of Server::URL_HTTP, Server::URL_SSL, Server::URL_STREAMING
 	 * @return string
 	 * @author Ivan Kerin
-	 **/	
+	 **/
 	public function url($file, $url_type = NULL)
 	{
 		$root = $this->web_root();
@@ -327,7 +327,7 @@ class Server_Local implements Server
 		}
 
 		$file = implode('/', array_map('rawurlencode', explode('/', $file)));
-		
+
 		return $root.str_replace(DIRECTORY_SEPARATOR, '/', $file);
 	}
 
