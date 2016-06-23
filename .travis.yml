@@ -1,22 +1,44 @@
 language: php
 
+sudo: false
+
 php:
   - 5.4
+  - 5.5
+  - 5.6
+  - 7
+  - hhvm
 
 env:
-  secure: |-
-    HL8gL8CFewWWHTq1XVZIqj5Yxla93ukacnlyg3UqEwZXGKR5k3LxmlsGm+TW
-    XKbXdNGLaAaZ09esawDV7XNfpE0g+te1Wb4FaYH9irrCsMyUfr6EQIjwaR5A
-    dw4tL4hjCSJgouaaUc5hEzs5GC2tI5eusvCzC1csVECr3BnDPjI=
+  global:
+    - secure: HL8gL8CFewWWHTq1XVZIqj5Yxla93ukacnlyg3UqEwZXGKR5k3LxmlsGm+TWXKbXdNGLaAaZ09esawDV7XNfpE0g+te1Wb4FaYH9irrCsMyUfr6EQIjwaR5Adw4tL4hjCSJgouaaUc5hEzs5GC2tI5eusvCzC1csVECr3BnDPjI=
+  matrix:
+    - DEPS=normal
+    - DEPS=highest
+    - DEPS=lowest
+
+matrix:
+  fast_finish: true
+
+branches:
+  only:
+    - master
+
+cache:
+  directories:
+  - $HOME/.composer/cache
 
 notifications:
   email: false
   slack:
     secure: ediAzmtYRAxxvwfGX9rsTvsEWamQ5DtyHTsR9+jOxltCp4oi2bt5goXA84w0DjL80AwOztSiRuvD926EKa+5Hy9GTRUEZoUKGd2Ttp2jSwspl/u147p8lZFRDCoTg+OtuY6oMhGuHgDJR2NBTWKyKRZeVTrYBqKwm3J9BnZS3q8=
 
+before_install: composer selfupdate
+
 install:
-  - composer selfupdate
-  - composer install --no-interaction
+  - if [ "$DEPS" = "normal" ]; then composer install --no-interaction; fi;
+  - if [ "$DEPS" = "highest" ]; then composer update --no-interaction; fi;
+  - if [ "$DEPS" = "lowest" ]; then composer update --no-interaction --prefer-lowest --prefer-stable; fi;
 
 before_script:
   - mkdir -p build/logs
